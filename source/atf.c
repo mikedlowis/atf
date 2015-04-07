@@ -35,7 +35,7 @@ static void handle_signal(int sig) {
     }
     /* Error and exit. No summary will be printed but the user will know which
        test has crashed. */
-    fprintf(stderr,"%s:%d:0:%s:CRASH (signal: %d)\n", Curr_File, Curr_Line, Curr_Test, sig);
+    fprintf(stderr,"%s:%d:0:%s:CRASH (signal: %d - %s)\n", Curr_File, Curr_Line, Curr_Test, sig, sig_name);
     Failed++;
     (void)atf_print_results();
     exit(1);
