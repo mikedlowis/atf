@@ -15,15 +15,29 @@ CFLAGS   += ${INCS} ${CPPFLAGS}
 LDFLAGS  += ${LIBS}
 ARFLAGS   = rcs
 
+# commands
+COMPILE = @echo CC $@; ${CC} ${CFLAGS} -c -o $@ $<
+LINK    = @echo LD $@; ${LD} -o $@ $^ ${LDFLAGS}
+ARCHIVE = @echo AR $@; ${AR} ${ARFLAGS} $@ $^
+CLEAN   = @rm -f
+
 #------------------------------------------------------------------------------
 # Build Targets and Rules
 #------------------------------------------------------------------------------
-SRCS = source/atf.c
-OBJS = ${SRCS:.c=.o}
-TEST_SRCS = tests/main.c tests/test_signals.c
-TEST_OBJS = ${TEST_SRCS:.c=.o}
+LIBNAME = atf
+LIB  = lib${LIBNAME}.a
 
-all: options libatf.a testatf
+DEPS = ${OBJS:.o=.d}
+OBJS = source/atf.o
+
+TEST_BIN  = test${LIBNAME}
+TEST_DEPS = ${TEST_OBJS:.o=.d}
+TEST_OBJS = tests/main.o tests/test_signals.o
+
+# load user-specific settings
+-include config.mk
+
+all: options ${LIB} tests
 
 options:
 	@echo "Toolchain Configuration:"
@@ -34,22 +48,28 @@ options:
 	@echo "  AR       = ${AR}"
 	@echo "  ARFLAGS  = ${ARFLAGS}"
 
-libatf.a: ${OBJS}
-	@echo AR $@
-	@${AR} ${ARFLAGS} $@ ${OBJS}
+tests: ${TEST_BIN}
 
-testatf: ${TEST_OBJS} libatf.a
-	@echo LD $@
-	@${LD} -o $@ ${TEST_OBJS} libatf.a ${LDFLAGS}
+${LIB}: ${OBJS}
+	${ARCHIVE}
+
+${TEST_BIN}: ${TEST_OBJS} ${LIB}
+	${LINK}
 	-./$@
 	@echo "Note: It is expected that exactly 2 of the tests will fail."
 
 .c.o:
-	@echo CC $<
-	@${CC} ${CFLAGS} -c -o $@ $<
+	${COMPILE}
 
 clean:
-	@rm -f libatf.a testatf ${OBJS} ${TEST_OBJS}
+	${CLEAN} ${LIB} ${TEST_BIN} ${OBJS} ${TEST_OBJS}
+	${CLEAN} ${OBJS:.o=.gcno} ${OBJS:.o=.gcda}
+	${CLEAN} ${TEST_OBJS:.o=.gcno} ${TEST_OBJS:.o=.gcda}
+	${CLEAN} ${DEPS} ${TEST_DEPS}
 
-.PHONY: all options
+# load dependency files
+-include ${DEPS}
+-include ${TEST_DEPS}
+
+.PHONY: all options tests
 
