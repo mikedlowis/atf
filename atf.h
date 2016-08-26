@@ -1,25 +1,19 @@
 /**
-  @file atf.h
-  @brief Aardvark Test Framework main interface file.
-  $Revision$
-  $HeadURL$
+  @brief A minimalistic unit testing framework for C.
+  @author Michael D. Lowis
+  @license BSD 2-clause License
 */
-#ifndef TEST_H
-#define TEST_H
+#ifndef ATF_H
+#define ATF_H
 
 #include <stddef.h>
 #include <stdbool.h>
 
 extern char* Curr_Test;
-
 void atf_init(int argc, char** argv);
-
 void atf_test_start(char* file, unsigned int line, char* name);
-
 bool atf_test_assert(bool success, char* expr_str, char* file, int line);
-
 void atf_test_fail(char* expr, char* file, int line);
-
 int atf_print_results(void);
 
 #define CHECK(expr) \
@@ -128,4 +122,4 @@ int atf_print_results(void) {
 #undef INCLUDE_DEFS
 #endif
 
-#endif /* TEST_H */
+#endif /* ATF_H */
