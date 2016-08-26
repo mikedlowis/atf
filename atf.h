@@ -1,11 +1,48 @@
 /**
-  @file atf.c
-  @brief See header for details
+  @file atf.h
+  @brief Aardvark Test Framework main interface file.
   $Revision$
   $HeadURL$
 */
-#include "atf.h"
+#ifndef TEST_H
+#define TEST_H
+
 #include <stddef.h>
+#include <stdbool.h>
+
+extern char* Curr_Test;
+
+void atf_init(int argc, char** argv);
+
+void atf_test_start(char* file, unsigned int line, char* name);
+
+bool atf_test_assert(bool success, char* expr_str, char* file, int line);
+
+void atf_test_fail(char* expr, char* file, int line);
+
+int atf_print_results(void);
+
+#define CHECK(expr) \
+    if(atf_test_assert((expr), #expr, __FILE__, __LINE__)) break
+
+#define TEST_SUITE(name) \
+    void name(void)
+
+#define TEST(desc) \
+    for(atf_test_start(__FILE__,__LINE__,#desc); Curr_Test != NULL; Curr_Test = NULL)
+
+#define RUN_TEST_SUITE(name) \
+    name();
+
+#define RUN_EXTERN_TEST_SUITE(name) \
+    do { extern TEST_SUITE(name); RUN_TEST_SUITE(name); } while(0)
+
+#define PRINT_TEST_RESULTS \
+    atf_print_results
+
+/* Function Definitions
+ *****************************************************************************/
+#ifdef INCLUDE_DEFS
 #include <stdio.h>
 #include <stdlib.h>
 #ifndef NO_SIGNALS
@@ -58,10 +95,6 @@ void atf_init(int argc, char** argv) {
 #endif
 }
 
-void atf_run_suite(suite_t suite) {
-    suite();
-}
-
 void atf_test_start(char* file, unsigned int line, char* name) {
     Curr_File = file;
     Curr_Line = line;
@@ -92,3 +125,7 @@ int atf_print_results(void) {
     return Failed;
 }
 
+#undef INCLUDE_DEFS
+#endif
+
+#endif /* TEST_H */
