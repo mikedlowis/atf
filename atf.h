@@ -1,5 +1,5 @@
 /**
-    A minimalistic unit testing framework for C.
+    Aardvark Test Framework - A minimalistic unit testing framework for C.
 
     Copyright 2014 Michael D. Lowis
     
@@ -29,6 +29,9 @@ void atf_test_start(char* file, unsigned int line, char* name);
 bool atf_test_assert(bool success, char* expr_str, char* file, int line);
 void atf_test_fail(char* expr, char* file, int line);
 int atf_print_results(void);
+
+#define IGNORE(msg) \
+    printf("%s:%d:%s:IGNORE:\n\t%s\n", __FILE__, __LINE__, Curr_Test, msg); break
 
 #define CHECK(expr) \
     if(atf_test_assert((expr), #expr, __FILE__, __LINE__)) break

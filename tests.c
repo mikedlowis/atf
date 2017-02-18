@@ -2,11 +2,16 @@
 #include <atf.h>
 
 TEST_SUITE(Local_Suite) {
-    TEST(Passing_Test) {
+    TEST(Ignored Test) {
+        IGNORE("This test is ignored");
+        CHECK(false); // Will not run
+    }
+    
+    TEST(Passing Test) {
         CHECK(true);
     }
 
-    TEST(Failing_Test) {
+    TEST(Failing Test) {
         CHECK(false);
     }
 }
