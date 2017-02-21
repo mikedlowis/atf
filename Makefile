@@ -5,6 +5,9 @@ DISTGZ    = ${DISTTAR}.gz
 DISTFILES = atf.h LICENSE.md Makefile README.md tests.c
 
 tests: tests.c
+	@echo "============================================"
+	@echo "NOTE: It is expected that 3 tests will fail."
+	@echo "============================================"
 	$(CC) -I. -o $@ $^
 	-./$@
 

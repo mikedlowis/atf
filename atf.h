@@ -22,6 +22,8 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <setjmp.h>
+#include <assert.h>
 
 extern char* Curr_Test;
 void atf_init(int argc, char** argv);
@@ -35,6 +37,9 @@ int atf_print_results(void);
 
 #define CHECK(expr) \
     if(atf_test_assert((expr), #expr, __FILE__, __LINE__)) break
+    
+#define CHECK_EXITCODE(code) \
+    CHECK(ExitCode == code)
 
 #define TEST_SUITE(name) \
     void name(void)
@@ -50,6 +55,9 @@ int atf_print_results(void);
 
 #define PRINT_TEST_RESULTS \
     atf_print_results
+    
+#define EXPECT_EXIT \
+    if ((ExitExpected = true, 0 == setjmp(ExitPad)))
 
 /* Function Definitions
  *****************************************************************************/
@@ -65,6 +73,9 @@ char* Curr_File = NULL;
 unsigned int Curr_Line = 0;
 static unsigned int Total = 0;
 static unsigned int Failed = 0;
+bool ExitExpected;
+int ExitCode;
+jmp_buf ExitPad;
 
 #ifndef NO_SIGNALS
 static void handle_signal(int sig) {
@@ -86,7 +97,7 @@ static void handle_signal(int sig) {
     fprintf(stderr,"%s:%d:0:%s:CRASH (signal: %d - %s)\n", Curr_File, Curr_Line, Curr_Test, sig, sig_name);
     Failed++;
     (void)atf_print_results();
-    exit(1);
+    _Exit(1);
 }
 #endif
 
@@ -134,6 +145,16 @@ int atf_print_results(void) {
     "\n\n";
     printf(results_string, Total, Total - Failed, Failed);
     return Failed;
+}
+
+void exit(int code) {
+    if (ExitExpected) {
+        ExitCode = code;
+        ExitExpected = false;
+        longjmp(ExitPad, 1);
+    } else {
+        assert(!"Unexpected exit. Something went wrong");
+    }
 }
 
 #undef INCLUDE_DEFS

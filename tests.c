@@ -24,6 +24,16 @@ int main(int argc, char** argv) {
 }
 
 TEST_SUITE(External_Suite) {
+    TEST(CHECK_EXITCODE should pass if exit called with correct code) {
+        EXPECT_EXIT { exit(42); }
+        CHECK_EXITCODE(42);
+    }
+    
+    TEST(CHECK_EXITCODE should fail if exit called with incorrect code) {
+        EXPECT_EXIT { exit(42); }
+        CHECK_EXITCODE(41);
+    }
+    
     TEST(Should_handle_SIGABRT) {
         raise(SIGABRT);
     }
