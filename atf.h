@@ -52,9 +52,6 @@ int atf_print_results(void);
 
 #define RUN_EXTERN_TEST_SUITE(name) \
     do { extern TEST_SUITE(name); RUN_TEST_SUITE(name); } while(0)
-
-#define PRINT_TEST_RESULTS \
-    atf_print_results
     
 #define EXPECT_EXIT \
     if ((ExitExpected = true, 0 == setjmp(ExitPad)))
