@@ -13,7 +13,7 @@ Simply copy [atf.h](atf.h) to a suitable include path for the desired project.
 
 # Macro API
 
-The framework is controlled through an extremely minimal of C preprocessor 
+The framework is controlled through an extremely minimal set of C preprocessor 
 macros. The macros are used to define test suites, define tests within suites,
 and to perform actual conditional checks as part of the test. Below is a 
 comprehensive list of the macros provided and their function.
